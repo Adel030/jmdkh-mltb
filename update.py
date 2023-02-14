@@ -3,16 +3,40 @@ from os import path as ospath, environ
 from subprocess import run as srun
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from requests import get
+
+
+def dw_file(url, filename):
+        r = get(url, allow_redirects=True, stream=True)
+        with open(filename, 'wb') as fd:
+                for chunk in r.iter_content(chunk_size=1024 * 10):
+                        if chunk:
+                                fd.write(chunk)
+        return
+
+
+###############------Download_Config------###############
+CONFIG_FILE_URL = environ.get("CONFIG_FILE_URL", False)
+if CONFIG_FILE_URL and str(CONFIG_FILE_URL).startswith("http"):
+    dw_file(str(CONFIG_FILE_URL), "config.env")
+
+load_dotenv('config.env', override=True)
+
+ACCOUNTS_ZIP_URL = environ.get("ACCOUNTS_ZIP_URL", False)
+TOKEN_PICKLE_URL = environ.get("TOKEN_PICKLE_URL", False)
+if ACCOUNTS_ZIP_URL and str(ACCOUNTS_ZIP_URL).startswith("http"):
+    dw_file(str(ACCOUNTS_ZIP_URL), "accounts.zip")
+if TOKEN_PICKLE_URL and str(TOKEN_PICKLE_URL).startswith("http"):
+    dw_file(str(TOKEN_PICKLE_URL), "token.pickle")
 
 if ospath.exists('log.txt'):
     with open('log.txt', 'r+') as f:
         f.truncate(0)
 
+
 basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     handlers=[FileHandler('log.txt'), StreamHandler()],
                     level=INFO)
-
-load_dotenv('config.env', override=True)
 
 try:
     if bool(environ.get('_____REMOVE_THIS_LINE_____')):
