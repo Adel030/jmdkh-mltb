@@ -6,5 +6,6 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY . .
 EXPOSE 5000
 EXPOSE THE QBPORT
+EXPOSE 8000
 RUN chmod +x /usr/src/app/start.sh
 ENTRYPOINT ["/usr/src/app/start.sh"]
